@@ -2,6 +2,8 @@
 
 #where to store players home directories
 homeDir=~/bwrap
+#mount overlay of folder (good for games)
+overlayFolder=""
 
 layout=$(zenity --forms \
   --title='splitLauncher' \
@@ -25,6 +27,8 @@ if ! [[ $columns =~ $re ]] ; then
    echo "error: Not a number" 
    exit 0
 fi
+
+count=$(($rows*$columns))
 
 echo "$action"
 if [ "$action" == "flatpak" ]; then
@@ -51,9 +55,15 @@ function cleanup () {
   do
     kill $pid
   done 
+  if [ "$overlayFolder" != "" ]; then
+    for ((i=1;i<=count;i++));do
+      fusermount -u $homeDir/p$i/Overlay
+    done
+  fi
 }
 
 trap cleanup SIGINT
+trap cleanup SIGTERM
 
 #Setup xwaylands
 x=1
@@ -74,7 +84,6 @@ for ((i=1;i<=columns;i++)); do
 done
 
 #launch window manager
-count=$(($rows*$columns))
 for ((i=1;i<=count;i++)); do
   xfwm4 --display=:$i &
   pids="$pids $!"
@@ -89,14 +98,49 @@ then
   done
 fi
 
+#mount overlay
+if [ "$overlayFolder" != "" ]; then
+  for ((i=1;i<=count;i++));do
+    mkdir -p $homeDir/p$i/Overlay/upper
+    mkdir -p $homeDir/p$i/Overlay/workdir
+    fuse-overlayfs -o \
+      lowerdir=$overlayFolder,upperdir=$homeDir/p$i/Overlay/upper,workdir=$homeDir/p$i/Overlay/workdir \
+      $homeDir/p$i/Overlay
+  done
+fi
+
 #launch apps
 for (( i=1; i<=count; i++ ));do
   mkdir -p $homeDir/p$i
   if [ "$action" == "flatpak" ]; then
     env WAYLAND_DISPLAY="" XDG_SESSION_TYPE=x11 DISPLAY=:$i HOME=$homeDir/p$i flatpak run $app &
   elif [ "$action" == "bwrap" ]; then
-    env WAYLAND_DISPLAY="" XDG_SESSION_TYPE=x11 DISPLAY=:$i bwrap --dev-bind / / --dev-bind $homeDir/p$i $HOME $app &
+    bwrap \
+      --die-with-parent \
+      --new-session \
+      --dev-bind / / \
+      --proc /proc \
+      --dir /var \
+      --dir "$XDG_RUNTIME_DIR" \
+      --bind "$XDG_RUNTIME_DIR"/pulse/native "$XDG_RUNTIME_DIR"/pulse/native \
+      --tmpfs /tmp \
+      --ro-bind /tmp/.X11-unix/X$i /tmp/.X11-unix/X$i \
+      --dev-bind $homeDir/p$i $HOME \
+      --chdir $HOME \
+      --clearenv \
+      --setenv PATH "$PATH" \
+      --setenv DISPLAY ":$i" \
+      --setenv HOME "$HOME" \
+      --setenv USER "$USER" \
+      --setenv USERNAME "$USERNAME" \
+      --setenv LANG "$LANG" \
+      --setenv XDG_RUNTIME_DIR "$XDG_RUNTIME_DIR" \
+      --setenv XDG_SESSION_TYPE "$XDG_SESSION_TYPE" \
+      --setenv XDG_CURRENT_DESKTOP "$XDG_CURRENT_DESKTOP" \
+      dbus-run-session $app &
   fi
   pids="$pids $!"
+  sleep 0.5s
 done
 wait
+cleanup
