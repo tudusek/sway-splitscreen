@@ -46,8 +46,9 @@ do
   then
     if [ "$output" != "no" ]
     then
-      devtype="$(echo $inputs | jq -r '.[] | select(.identifier == "'$device'").type' )"
-      if [ "$devtype" == "pointer" ] || [ "$devtype" == "touchpad" ]
+      devp=$(echo $inputs | \
+        jq -r '.[] | select(.identifier == "'$device'") | select(.type == "pointer" or .type == "touchpad" ).identifier')
+      if [ "$device" == "$devp" ]
       then
         echo swaymsg input "$device" map_to_output "$output"
       fi
@@ -57,10 +58,8 @@ do
     if [ "$output" != "no" ]
     then
       devp=$(echo $inputs | \
-        jq -r '.[] | select(.identifier == "'$device'" and .type == "pointer" or .type == "touchpad" ).name' | \
-        sort | uniq)
-      echo $devp
-      if [ "$device" == "$devp"]
+        jq -r '.[] | select(.identifier == "'$device'") | select(.type == "pointer" or .type == "touchpad" ).identifier')
+      if [ "$device" == "$devp" ]
       then
         swaymsg input "$device" map_to_output "$output"
       fi
