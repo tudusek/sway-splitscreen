@@ -4,7 +4,8 @@ seatnum=0
 while true
 do
   taken=false;
-  for i in $(swaymsg -t get_seats | jq -r '.[].name');
+  seats=$(swaymsg -t get_seats | jq -r '.[].name')
+  for i in $seats;
   do
     if [ "seat$seatnum" == "$i" ]
     then
@@ -30,6 +31,10 @@ devices=$(zenity --list \
   --multiple \
   $(swaymsg -t get_seats | \
     jq -r '.[] | select(.name =="seat0").devices.[].identifier' | uniq))
+
+if [ "$devices" == "" ]; then
+  exit
+fi
 
 outputs=$(swaymsg -t get_outputs)
 output=$(zenity --forms \

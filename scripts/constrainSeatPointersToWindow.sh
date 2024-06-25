@@ -16,7 +16,7 @@ sleep 0.3s
 
 rect=$(swaymsg -t get_tree \
   | jq -r '[recurse(.nodes[]) | del(.nodes[]) | select(.pid != null) | .rect] | unique | .[] | "\(.x),\(.y) \(.width)x\(.height)"' \
-  | slurp -f '%x %y %w %h' 2> /dev/null )
+  | slurp -o -r -f '%x %y %w %h' 2> /dev/null )
 
 if [ "$rect" == "" ];then
   exit
