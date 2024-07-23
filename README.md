@@ -35,6 +35,10 @@ In both cases it creates by default home folder for each player in ~/bwrap. You 
 ### Mindustry flatpak version
 ![Mindustry flatpak](https://github.com/tudusek/sway-splitscreen/assets/112270296/de4379e0-748a-4490-8723-9930fac3b597)
 
+### Minecraft
+Minecraft java edition in bwrap mode
+![Minecraft bwrap](https://github.com/user-attachments/assets/54c00dee-360c-46c5-ab3a-469e1e9ff7c3)
+
 ### Team Fortress 2
 using bwrap mode on local server with vac disabled
 ![TF2 Steam bwrap](https://github.com/user-attachments/assets/d0963c56-b0e0-4d0a-8766-e5340e2c1a30)
