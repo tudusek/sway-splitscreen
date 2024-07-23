@@ -9,26 +9,32 @@
     - bwrap
     - xfwm4
     - fuse-overlayfs (optional)
-    - hsetroot (optional, for colored background)
+    - hsetroot (not working for now, for colored background)
 
 ## configSeats.sh
 Creates new seat and assigns device(s) to it.
 Sometimes your input device might be shown as multiple devices. To avoid issues select all of them.
 
-
 ## generateSeatConfig.sh
 Prints commands to recreate current seats configuration.
 
 ## splitLauncher.sh
-Sets up splitscreen in specifed layout and starts the aplication.
+Launches newPlayer.sh in specified layout.
+
+## newPlayer.sh
+Launches Xwayland rootful with xfwm4, shows player selection dialog and starts the program/game.
 There are two modes:
   - flatpak
   - bwrap
-    - creates isolated enviroment for each player and launches specifed command in it
+    - creates isolated enviroment for player and launches specifed command in it
     - binds player home dir on $HOME
 
 In both cases it creates by default home folder for each player in ~/bwrap. You can change the path by editing variable `homeDir` in the script.
 
 ## screenshots
+### Mindustry flatpak version
 ![Mindustry flatpak](https://github.com/tudusek/sway-splitscreen/assets/112270296/de4379e0-748a-4490-8723-9930fac3b597)
-Mindustry flatpak version
+
+### Team Fortress 2
+using bwrap mode on local server with vac disabled
+![TF2 Steam bwrap](https://github.com/user-attachments/assets/d0963c56-b0e0-4d0a-8766-e5340e2c1a30)
