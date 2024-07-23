@@ -38,3 +38,7 @@ In both cases it creates by default home folder for each player in ~/bwrap. You 
 ### Team Fortress 2
 using bwrap mode on local server with vac disabled
 ![TF2 Steam bwrap](https://github.com/user-attachments/assets/d0963c56-b0e0-4d0a-8766-e5340e2c1a30)
+
+### Fortninte (v8.51)
+Fortnite v8.51 running with wine using my fork wine_injector to inject dlls from reboot launcher. LawinServer and Windows vm with server launched via reboot launcher running in background.
+![fn](https://github.com/user-attachments/assets/af0e6584-5b47-4110-b255-dced2888058f)
